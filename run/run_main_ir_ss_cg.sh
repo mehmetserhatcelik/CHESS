@@ -1,6 +1,6 @@
 source .env
-data_mode=$DATA_MODE # Options: 'dev', 'train' 
-data_path=$DATA_PATH # UPDATE THIS WITH THE PATH TO THE TARGET DATASET
+data_mode='dev' # Options: 'dev', 'train' 
+data_path='./data/dev' # UPDATE THIS WITH THE PATH TO THE TARGET DATASET
 
 config="./run/configs/CHESS_IR_SS_CG.yaml"
 
