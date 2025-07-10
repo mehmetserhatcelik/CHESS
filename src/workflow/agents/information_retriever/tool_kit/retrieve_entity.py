@@ -2,7 +2,7 @@ import numpy as np
 import difflib
 from typing import List, Dict, Any, Tuple, Optional
 
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_vertexai import VertexAIEmbeddings
 from google.oauth2 import service_account
 from google.cloud import aiplatform
 import vertexai
@@ -31,7 +31,7 @@ class RetrieveEntity(Tool):
 
     def __init__(self):
         super().__init__()
-        self.embedding_function = OpenAIEmbeddings(model="text-embedding-3-small")
+        self.embedding_function = VertexAIEmbeddings(model="text-embedding-004")
         self.edit_distance_threshold = 0.3
         self.embedding_similarity_threshold = 0.6
         

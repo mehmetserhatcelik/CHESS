@@ -28,7 +28,7 @@ if GCP_CREDENTIALS and GCP_PROJECT and GCP_REGION:
 
 
 # EMBEDDING_FUNCTION = VertexAIEmbeddings(model_name="text-embedding-004")#OpenAIEmbeddings(model="text-embedding-3-large")
-EMBEDDING_FUNCTION = OpenAIEmbeddings(model="text-embedding-3-large")
+EMBEDDING_FUNCTION = VertexAIEmbeddings(model_name="text-embedding-004")
 
 
 def make_db_context_vec_db(db_directory_path: str, **kwargs) -> None:
