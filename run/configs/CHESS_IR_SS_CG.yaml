@@ -28,7 +28,7 @@ team_agents:
         mode: "ask_model"
         template_name: "select_tables"
         engine_config:
-          engine_name: "gemini-1.5-flash""
+          engine_name: "gemini-1.5-flash"
           temperature: 0.0
         parser_name: "select_tables"
 
@@ -36,7 +36,7 @@ team_agents:
         mode: "ask_model"
         template_name: "select_columns"
         engine_config:
-          engine_name: "gemini-1.5-flash""
+          engine_name: "gemini-1.5-flash"
           temperature: 0.0
         parser_name: "select_columns"
 
