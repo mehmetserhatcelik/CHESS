@@ -1,6 +1,6 @@
 source .env
 data_mode='dev' # Options: 'dev', 'train' 
-data_path='./data/dev' # UPDATE THIS WITH THE PATH TO THE TARGET DATASET
+data_path='./data/dev/dev.json' # Path to the JSON file containing questions and SQL pairs
 
 config="./run/configs/CHESS_IR_SS_CG.yaml"
 
