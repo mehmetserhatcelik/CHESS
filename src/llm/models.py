@@ -180,7 +180,7 @@ def call_engine(message: str, engine: Any, max_attempts: int = 12, backoff_base:
     for attempt in range(max_attempts):
         try:
             output = engine.invoke(message)
-            return output.content
+            return output
         except Exception as e:
             # if attempt < max_attempts - 1:
             #     logger.log(f"Failed to invoke the chain {attempt + 1} times.\n{type(e)}\n{e}", "warning")
