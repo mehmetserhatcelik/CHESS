@@ -53,6 +53,10 @@ ENGINE_CONFIGS: Dict[str, Dict[str, Any]] = {
         "constructor": VertexAI,
         "params": {"model": "gemini-1.5-flash-002", "temperature": 0, "safety_settings": safety_settings}
     },
+    "gemini-2.0-flash-lite":{
+        "constructor": VertexAI,
+        "params": {"model": "gemini-2.0-flash-lite-001", "temperature": 0, "safety_settings": safety_settings}
+    },
     "picker_gemini_model": {
         "constructor": VertexAI,
         "params": {"model": "projects/613565144741/locations/us-central1/endpoints/7618015791069265920", "temperature": 0, "safety_settings": safety_settings}

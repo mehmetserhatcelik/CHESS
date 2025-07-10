@@ -2,12 +2,12 @@ setting_name: CHESS_IR_SS_CG
 
 team_agents:
   information_retriever:
-    engine: "gemini-1.5-flash"
+    engine: "gemini-2.0-flash-lite"
     tools:
       extract_keywords:
         template_name: "extract_keywords"
         engine_config:
-          engine_name: "gemini-1.5-flash"
+          engine_name: "gemini-2.0-flash-lite"
           temperature: 0.2
         parser_name: "python_list_output_parser"
       retrieve_entity: {}
@@ -15,12 +15,12 @@ team_agents:
         top_k: 5
 
   schema_selector:
-    engine: "gemini-1.5-flash"
+    engine: "gemini-2.0-flash-lite"
     tools:
       filter_column:
         template_name: "filter_column"
         engine_config:
-          engine_name: "gemini-1.5-flash"
+          engine_name: "gemini-2.0-flash-lite"
           temperature: 0.0
         parser_name: "filter_column"
 
@@ -28,7 +28,7 @@ team_agents:
         mode: "ask_model"
         template_name: "select_tables"
         engine_config:
-          engine_name: "gemini-1.5-flash"
+          engine_name: "gemini-2.0-flash-lite"
           temperature: 0.0
         parser_name: "select_tables"
 
@@ -36,18 +36,18 @@ team_agents:
         mode: "ask_model"
         template_name: "select_columns"
         engine_config:
-          engine_name: "gemini-1.5-flash"
+          engine_name: "gemini-2.0-flash-lite"
           temperature: 0.0
         parser_name: "select_columns"
 
   candidate_generator:
-    engine: "gemini-1.5-flash"
+    engine: "gemini-2.0-flash-lite"
     tools:
       generate_candidate:
         generator_configs:
           - template_name: "generate_candidate_one"
             engine_config:
-              engine_name: "gemini-1.5-flash"
+              engine_name: "gemini-2.0-flash-lite"
               temperature: 0.01
             parser_name: "generate_candidate_gemini_markdown_cot"
             sampling_count: 1
@@ -55,6 +55,6 @@ team_agents:
       revise:
         template_name: "revise_one"
         engine_config:
-          engine_name: "gemini-1.5-flash"
+          engine_name: "gemini-2.0-flash-lite"
           temperature: 0.0
         parser_name: "revise_new"
