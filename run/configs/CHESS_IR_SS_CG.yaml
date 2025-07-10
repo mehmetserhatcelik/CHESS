@@ -2,59 +2,59 @@ setting_name: CHESS_IR_SS_CG
 
 team_agents:
   information_retriever:
-    engine: 'gpt-4o-mini'
+    engine: "gemini-1.5-flash"
     tools:
       extract_keywords:
-        template_name: 'extract_keywords'
+        template_name: "extract_keywords"
         engine_config:
-          engine_name: 'gpt-4o-mini'
+          engine_name: "gemini-1.5-flash"
           temperature: 0.2
-        parser_name: 'python_list_output_parser'
+        parser_name: "python_list_output_parser"
       retrieve_entity: {}
       retrieve_context:
         top_k: 5
 
   schema_selector:
-    engine: 'gpt-4o-mini'
+    engine: "gemini-1.5-flash"
     tools:
       filter_column:
-        template_name: 'filter_column'
+        template_name: "filter_column"
         engine_config:
-          engine_name: 'gpt-4o-mini'
+          engine_name: "gemini-1.5-flash"
           temperature: 0.0
-        parser_name: 'filter_column'
+        parser_name: "filter_column"
 
       select_tables:
-        mode: 'ask_model'
-        template_name: 'select_tables'
+        mode: "ask_model"
+        template_name: "select_tables"
         engine_config:
-          engine_name: 'gpt-4o'
+          engine_name: "gemini-1.5-flash""
           temperature: 0.0
-        parser_name: 'select_tables'
+        parser_name: "select_tables"
 
       select_columns:
-        mode: 'ask_model'
-        template_name: 'select_columns'
+        mode: "ask_model"
+        template_name: "select_columns"
         engine_config:
-          engine_name: 'gpt-4o'
+          engine_name: "gemini-1.5-flash""
           temperature: 0.0
-        parser_name: 'select_columns'
+        parser_name: "select_columns"
 
   candidate_generator:
-    engine: 'gpt-4o-mini'
+    engine: "gemini-1.5-flash"
     tools:
       generate_candidate:
         generator_configs:
-          - template_name: 'generate_candidate_one'
+          - template_name: "generate_candidate_one"
             engine_config:
-              engine_name: 'gpt-4o-mini'
+              engine_name: "gemini-1.5-flash"
               temperature: 0.01
-            parser_name: 'generate_candidate_gemini_markdown_cot'
+            parser_name: "generate_candidate_gemini_markdown_cot"
             sampling_count: 1
 
       revise:
-        template_name: 'revise_one'
+        template_name: "revise_one"
         engine_config:
-          engine_name: 'gpt-4o-mini'
+          engine_name: "gemini-1.5-flash"
           temperature: 0.0
-        parser_name: 'revise_new'
+        parser_name: "revise_new"
