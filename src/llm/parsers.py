@@ -261,6 +261,63 @@ class TestCaseGenerationOutput(BaseOutputParser):
             raise OutputParserException(f"Error parsing test case generation: {e}")
         return {"unit_tests": unit_tests}
 
+class PlainTextOrJSONQuestionParser(BaseOutputParser):
+    """Parses either plain text question or a JSON object {"question": str}."""
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+    def parse(self, output: str) -> Any:
+        try:
+            txt = output.strip()
+            # Try parse a minimal JSON first
+            if txt.startswith("{") and txt.endswith("}"):
+                data = json.loads(txt)
+                if isinstance(data, dict) and "question" in data:
+                    return {"question": str(data["question"]).strip()}
+            # Otherwise, treat as plain text answer possibly within tags
+            if "```" in txt:
+                # take first fenced block content
+                txt = txt.split("```")[1]
+            # remove tag wrappers if present
+            if "<Answer>" in txt and "</Answer>" in txt:
+                txt = txt.split("<Answer>")[1].split("</Answer>")[0]
+            return {"question": txt.strip()}
+        except Exception as e:
+            raise OutputParserException(f"Error parsing reverse question: {e}")
+
+class SimilarityJudgeParser(BaseOutputParser):
+    """Parses judge output containing winner_index and optional scores list."""
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+    def parse(self, output: str) -> Any:
+        try:
+            text = output
+            if "<Answer>" in text and "</Answer>" in text:
+                text = text.split("<Answer>")[1].split("</Answer>")[0]
+            # normalize whitespace
+            text = re.sub(r"\s+", " ", text).strip()
+            # extract winner_index
+            m = re.search(r"winner_index\s*:\s*(\d+)", text, flags=re.IGNORECASE)
+            if not m:
+                raise OutputParserException("winner_index not found")
+            winner_index_1_based = int(m.group(1))
+            winner_index = max(0, winner_index_1_based - 1)
+            # optional scores list
+            scores = None
+            m2 = re.search(r"scores\s*:\s*(\[[^\]]*\])", text, flags=re.IGNORECASE)
+            if m2:
+                try:
+                    scores = literal_eval(m2.group(1))
+                except Exception:
+                    scores = None
+            result = {"winner_index": winner_index}
+            if isinstance(scores, list):
+                result["scores"] = scores
+            return result
+        except OutputParserException:
+            raise
+        except Exception as e:
+            raise OutputParserException(f"Error parsing similarity judge output: {e}")
+
 def get_parser(parser_name: str) -> BaseOutputParser:
     """
     Returns the appropriate parser based on the provided parser name.
@@ -287,7 +344,9 @@ def get_parser(parser_name: str) -> BaseOutputParser:
         "revise_new": ReviseGeminiOutputParser(),
         "list_output_parser": ListOutputParser(),
         "evaluate": UnitTestEvaluationOutput(),
-        "generate_unit_tests": TestCaseGenerationOutput()
+        "generate_unit_tests": TestCaseGenerationOutput(),
+        "reverse_question": PlainTextOrJSONQuestionParser(),
+        "similarity_judge": SimilarityJudgeParser()
     }
 
     if parser_name not in parser_configs:

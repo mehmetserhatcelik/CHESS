@@ -1,0 +1,20 @@
+You are a judge. Given an initial user question and multiple candidate questions, pick the candidate most semantically similar to the initial question.
+
+Instructions:
+- Focus on intent and required information, not wording.
+- Break ties by choosing the more specific question that best captures the constraints in the initial question.
+- Respond with the winning question index (1-based). Optionally include a score vector with integer scores, one per candidate.
+
+<Inputs>
+INITIAL QUESTION:
+{INITIAL_QUESTION}
+
+CANDIDATE QUESTIONS:
+{GENERATED_QUESTIONS}
+</Inputs>
+
+<Answer>
+winner_index: <an integer in [1..N]>
+scores: <an optional Python list of integers aligned with the candidate order>
+</Answer>
+

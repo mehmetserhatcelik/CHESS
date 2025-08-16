@@ -1,0 +1,23 @@
+You are given a database schema and an SQL query.
+
+Your task: Write a single concise natural language question that the SQL most likely answers.
+
+Constraints:
+- The question must be self-contained and clear to a non-technical user.
+- Do not mention table or column names explicitly.
+- No extra commentary.
+
+<Inputs>
+DATABASE SCHEMA:
+{DATABASE_SCHEMA}
+
+SQL:
+```sql
+{SQL}
+```
+</Inputs>
+
+<Output>
+Provide only the question text.
+</Output>
+

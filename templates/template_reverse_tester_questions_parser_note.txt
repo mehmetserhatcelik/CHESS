@@ -1,0 +1,2 @@
+Note to implementers: The parser for reverse question generation expects either a raw string (the question) or a JSON with key "question".
+

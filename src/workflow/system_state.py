@@ -31,6 +31,7 @@ class SystemState(BaseModel):
     
     SQL_meta_infos: Dict[str, List[SQLMetaInfo]] = {}
     unit_tests: Dict[str, List[str]] = {}
+    reverse_questions: Dict[str, List[str]] = {}
     errors: Dict[str, str] = {}
     
     def add_columns_to_tentative_schema(self, selected_columns: Dict[str, List[str]]) -> None:
