@@ -1,0 +1,14 @@
+**Instruction:**
+Given the SQL query and relevant database schema, write a concise natural language question that would be answered by this query.
+Provide only the question without any additional explanation.
+Format your response as:
+<Question>Your generated question here</Question>
+
+**Database Schema:**
+{DATABASE_SCHEMA}
+
+**SQL Query:**
+{SQL}
+
+**Output Format:**
+<Question>...</Question>

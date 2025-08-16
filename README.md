@@ -77,6 +77,11 @@ After preprocessing the databases, generate SQL queries for the BIRD dataset by 
     ```
 
     or
+    ```bash
+    sh run/run_main_ir_cg_rt.sh
+    ```
+
+    or
 
     ```bash
     sh run/run_main_ir_ss_ch.sh

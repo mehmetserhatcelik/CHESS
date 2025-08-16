@@ -261,6 +261,40 @@ class TestCaseGenerationOutput(BaseOutputParser):
             raise OutputParserException(f"Error parsing test case generation: {e}")
         return {"unit_tests": unit_tests}
 
+
+class QuestionGenerationOutputParser(BaseOutputParser):
+    """Parses a single question enclosed in <Question> tags."""
+
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+
+    def parse(self, output: str) -> Dict[str, str]:
+        logging.debug(f"Parsing output with QuestionGenerationOutputParser: {output}")
+        if "<Question>" in output and "</Question>" in output:
+            question = output.split("<Question>")[1].split("</Question>")[0].strip()
+        else:
+            question = output.strip()
+        return {"question": question}
+
+
+class SimilarityTesterOutputParser(BaseOutputParser):
+    """Parses the index of the most similar question enclosed in <Answer> tags."""
+
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+
+    def parse(self, output: str) -> Dict[str, int]:
+        logging.debug(f"Parsing output with SimilarityTesterOutputParser: {output}")
+        if "<Answer>" in output and "</Answer>" in output:
+            content = output.split("<Answer>")[1].split("</Answer>")[0].strip()
+        else:
+            content = re.findall(r"\d+", output)[0] if re.findall(r"\d+", output) else "0"
+        try:
+            index = int(content)
+        except Exception as e:
+            raise OutputParserException(f"Error parsing similarity tester output: {e}")
+        return {"index": index}
+
 def get_parser(parser_name: str) -> BaseOutputParser:
     """
     Returns the appropriate parser based on the provided parser name.
@@ -287,7 +321,9 @@ def get_parser(parser_name: str) -> BaseOutputParser:
         "revise_new": ReviseGeminiOutputParser(),
         "list_output_parser": ListOutputParser(),
         "evaluate": UnitTestEvaluationOutput(),
-        "generate_unit_tests": TestCaseGenerationOutput()
+        "generate_unit_tests": TestCaseGenerationOutput(),
+        "question_generator": QuestionGenerationOutputParser(),
+        "similarity_tester": SimilarityTesterOutputParser()
     }
 
     if parser_name not in parser_configs:

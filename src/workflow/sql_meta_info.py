@@ -17,6 +17,7 @@ class SQLMetaInfo(BaseModel):
     feedbacks: List[str] = []
     needs_refinement: bool = False
     refinement_steps: List[str] = []
+    generated_question: str = ""
     
     _execution_result: List[Any] = PrivateAttr(default=[])
     _execution_status: ExecutionStatus = PrivateAttr(default=None)

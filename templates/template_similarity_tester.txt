@@ -1,0 +1,12 @@
+You are given an original user question and several candidate questions produced from SQL queries. Choose the candidate question that best matches the meaning of the user question.
+
+<UserQuestion>
+{QUESTION}
+</UserQuestion>
+
+<CandidateQuestions>
+{CANDIDATE_QUESTIONS}
+</CandidateQuestions>
+
+Reply only with the index of the most similar candidate question using the format:
+<Answer>index</Answer>
