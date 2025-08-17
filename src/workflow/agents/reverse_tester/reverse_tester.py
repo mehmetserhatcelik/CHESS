@@ -26,3 +26,19 @@ class ReverseTester(Agent):
         }
 
 
+    def workout(self, system_state):
+        """
+        Deterministic workflow for reverse testing:
+        1) Generate reverse questions for the latest SQL candidates
+        2) Run similarity_test to pick the most similar question to the user's initial question
+        Returns the updated system state.
+        """
+        # Step 1: generate reverse questions
+        generate_tool = self.tools["generate_reverse_question"]
+        generate_tool(system_state)
+
+        # Step 2: similarity judge picks the best matching question -> corresponding SQL
+        similarity_tool = self.tools["similarity_test"]
+        similarity_tool(system_state)
+
+        return system_state

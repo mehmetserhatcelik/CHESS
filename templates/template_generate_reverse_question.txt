@@ -1,15 +1,23 @@
-You are given a database schema and an SQL query.
+You are given a database schema, human-friendly meanings for the columns referenced by the SQL, and the SQL query itself.
 
 Your task: Write a single concise natural language question that the SQL most likely answers.
 
 Constraints:
 - The question must be self-contained and clear to a non-technical user.
+- Reflect ALL explicit constraints present in the SQL (e.g., age ranges, units, filters, ordering/top-k like "highest", date ranges), using plain language.
+- Use column meanings to describe fields instead of raw column names.
 - Do not mention table or column names explicitly.
 - No extra commentary.
 
 <Inputs>
 DATABASE SCHEMA:
 {DATABASE_SCHEMA}
+
+COLUMN MEANINGS (only for columns referenced in the SQL):
+{COLUMN_MEANINGS}
+
+INITIAL QUESTION (for alignment):
+{INITIAL_QUESTION}
 
 SQL:
 ```sql
