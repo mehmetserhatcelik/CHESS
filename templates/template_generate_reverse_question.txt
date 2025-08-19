@@ -6,7 +6,7 @@ Constraints:
 - The question must be self-contained and clear to a non-technical user.
 - Reflect ALL explicit constraints present in the SQL (e.g., age ranges, units, filters, ordering/top-k like "highest", date ranges), using plain language.
 - Use column meanings to describe fields instead of raw column names.
-- Do not mention table or column names explicitly.
+- Do not mention table names explicitly.
 - No extra commentary.
 
 <Inputs>

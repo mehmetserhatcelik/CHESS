@@ -25,20 +25,30 @@ class GenerateReverseQuestion(Tool):
 
     def _run(self, state: SystemState):
         try:
-            # Pick the last generated candidate list
             key_to_reverse = list(state.SQL_meta_infos.keys())[-1]
             target_SQL_meta_infos = state.SQL_meta_infos[key_to_reverse]
         except Exception as e:
             print(f"Error in GenerateReverseQuestion: {e}")
             return
 
-        # Create a new slot for questions produced by this tool call
         if key_to_reverse.startswith(self.tool_name):
             id = int(key_to_reverse[len(self.tool_name)+1:])
             questions_id = self.tool_name + "_" + str(id+1)
         else:
             questions_id = self.tool_name + "_1"
         state.reverse_questions[questions_id] = []
+
+        if target_SQL_meta_infos:
+            seen_sqls = set()
+            unique_sql_meta_infos = []
+            for sql_meta_info in target_SQL_meta_infos:
+                sql_text = sql_meta_info.SQL
+                if sql_text not in seen_sqls:
+                    unique_sql_meta_infos.append(sql_meta_info)
+                    seen_sqls.add(sql_text)
+            if len(unique_sql_meta_infos) != len(target_SQL_meta_infos):
+                target_SQL_meta_infos = unique_sql_meta_infos
+                state.SQL_meta_infos[key_to_reverse] = unique_sql_meta_infos
 
         if not target_SQL_meta_infos:
             return
@@ -69,7 +79,6 @@ class GenerateReverseQuestion(Tool):
                 step=self.tool_name,
                 sampling_count=self.sampling_count
             )
-            # Flatten samples per SQL; take first sample per input as the representative question
             response = [res[0] for res in response if res]
         except Exception as e:
             print(f"Error generating reverse questions: {e}")
@@ -77,7 +86,6 @@ class GenerateReverseQuestion(Tool):
 
         for res in response:
             try:
-                # Parser returns {"question": str} or a raw string; normalize to string
                 if isinstance(res, dict) and "question" in res:
                     question_text = res["question"]
                 else:
@@ -130,7 +138,6 @@ class GenerateReverseQuestion(Tool):
         """
         data = self._load_column_meanings(db_id)
         if not data or db_id not in data:
-            # Try single-root layout like {"california_schools": {...}}
             root_key = next(iter(data.keys())) if isinstance(data, dict) and data else None
             db_block = data.get(root_key, {}) if root_key else {}
         else:
@@ -142,7 +149,6 @@ class GenerateReverseQuestion(Tool):
             for col in columns:
                 meaning = table_block.get(col)
                 if meaning:
-                    # Strip leading comment markers if present
                     meaning = str(meaning).lstrip("#").strip()
                     lines.append(f"- {table_name}.{col}: {meaning}")
         return "\n".join(lines) if lines else "(No additional meanings found)"
