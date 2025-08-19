@@ -93,8 +93,16 @@ class _HuggingFaceEmbeddingClient:
         self.device = device
         self.pooling = pooling.lower() if pooling else "mean"
         self.max_length = max_length or 8192
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
-        self.model = AutoModel.from_pretrained(model_name)
+        # Try fast tokenizer first; if it fails due to tokenizers JSON mismatch, fall back to slow
+        try:
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_name, use_fast=True, trust_remote_code=True
+            )
+        except Exception:
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_name, use_fast=False, trust_remote_code=True
+            )
+        self.model = AutoModel.from_pretrained(model_name, trust_remote_code=True)
         self.model.eval()
         self.model.to(self.device)
 
