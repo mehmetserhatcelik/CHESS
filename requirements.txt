@@ -33,4 +33,5 @@ sentencepiece>=0.1.99
 huggingface-hub>=0.25.2
 accelerate>=0.33.0
 einops>=0.7.0
-chromadb>=0.5.24
+# Let langchain-chroma resolve a compatible chromadb version (>=0.4.0,<0.6.0)
+# If you need a specific version, pin within that range, e.g. chromadb==0.5.23
