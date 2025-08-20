@@ -40,6 +40,17 @@ class SimilarityTest(Tool):
             print(f"Error in SimilarityTest: {e}")
             return
 
+        # Remove duplicates from candidates to match questions (same logic as generate_reverse_question)
+        if candidates:
+            seen_sqls = set()
+            unique_candidates = []
+            for sql_meta_info in candidates:
+                sql_text = sql_meta_info.SQL
+                if sql_text not in seen_sqls:
+                    unique_candidates.append(sql_meta_info)
+                    seen_sqls.add(sql_text)
+            candidates = unique_candidates
+
         if not candidates or not questions or len(candidates) != len(questions):
             self._init_sql_bucket(state, candidates_key)
             if candidates:
@@ -108,9 +119,10 @@ class SimilarityTest(Tool):
             else:
                 self.winner_index = -1
 
-        if self.winner_index is None or self.winner_index < 0 or self.winner_index >= len(candidates):
+        if self.winner_index is None or self.winner_index < 0 or self.winner_index >= len(questions):
             self.winner_index = 0
 
+        # winner_index is 0-based index into questions list, use it to select corresponding SQL
         state.SQL_meta_infos[self.SQL_id].append(candidates[self.winner_index])
 
     def _init_sql_bucket(self, state: SystemState, base_key: str):
