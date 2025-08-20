@@ -4,7 +4,11 @@ import math
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_vertexai import VertexAIEmbeddings
 import torch
-from transformers import AutoModel, AutoTokenizer
+try:
+    from transformers import AutoModel, AutoTokenizer, AutoModelForTextEmbedding
+except ImportError:  # pragma: no cover - older transformers versions
+    from transformers import AutoModel, AutoTokenizer
+    AutoModelForTextEmbedding = None
 
 
 def get_embedding_client(
@@ -102,7 +106,20 @@ class _HuggingFaceEmbeddingClient:
             self.tokenizer = AutoTokenizer.from_pretrained(
                 model_name, use_fast=False, trust_remote_code=True
             )
-        self.model = AutoModel.from_pretrained(model_name, trust_remote_code=True)
+        # Use AutoModelForTextEmbedding when available (e.g., Qwen3-8B-Embedding)
+        if AutoModelForTextEmbedding is not None:
+            try:
+                self.model = AutoModelForTextEmbedding.from_pretrained(
+                    model_name, trust_remote_code=True
+                )
+            except Exception:
+                self.model = AutoModel.from_pretrained(
+                    model_name, trust_remote_code=True
+                )
+        else:
+            self.model = AutoModel.from_pretrained(
+                model_name, trust_remote_code=True
+            )
         self.model.eval()
         self.model.to(self.device)
 
