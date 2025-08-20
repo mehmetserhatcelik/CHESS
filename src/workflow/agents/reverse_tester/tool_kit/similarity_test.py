@@ -51,10 +51,11 @@ class SimilarityTest(Tool):
         used_embeddings = False
         if self.mode in ("embeddings", "auto"):
             try:
-                model_name = self.embedding_config.get("model", "Qwen/Qwen3-Embedding-8B")
-                provider = self.embedding_config.get("provider", "huggingface")
-                device = self.embedding_config.get("device", "auto")
-                pooling = self.embedding_config.get("pooling", "mean")
+                # Default to Vertex AI embeddings unless overridden in YAML
+                model_name = self.embedding_config.get("model", "text-embedding-004")
+                provider = self.embedding_config.get("provider", "vertexai")
+                device = self.embedding_config.get("device")
+                pooling = self.embedding_config.get("pooling")
                 max_length = self.embedding_config.get("max_length")
 
                 client = get_embedding_client(

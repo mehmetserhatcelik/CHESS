@@ -57,7 +57,5 @@ team_agents:
           temperature: 0.0
         parser_name: "similarity_judge"
         embedding_config:
-          provider: "huggingface"
-          model: "Qwen/Qwen3-Embedding-8B"
-          device: "cuda"
-          pooling: "mean"
+          provider: "vertexai"
+          model: "text-embedding-004"

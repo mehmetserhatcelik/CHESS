@@ -35,8 +35,13 @@ def ordered_concurrent_function_calls(call_list: list) -> list:
     Returns:
         list: A list of results from the functions.
     """
+    # If there is nothing to call, return early to avoid creating a pool with 0 workers
+    if not call_list:
+        return []
+
     result_queue = queue.Queue()
-    with ThreadPoolExecutor(max_workers=len(call_list)) as executor:
+    # Ensure max_workers is never 0
+    with ThreadPoolExecutor(max_workers=max(1, len(call_list))) as executor:
         for idx, call in enumerate(call_list):
             func = _threaded(call['function'])
             kwargs = call['kwargs']
