@@ -51,7 +51,7 @@ class SimilarityTest(Tool):
         used_embeddings = False
         if self.mode in ("embeddings", "auto"):
             try:
-                model_name = self.embedding_config.get("model", "Qwen/Qwen3-Embedding-8B")
+                model_name = self.embedding_config.get("model", "Qwen/Qwen3-8B-Embedding")
                 provider = self.embedding_config.get("provider", "huggingface")
                 device = self.embedding_config.get("device", "auto")
                 pooling = self.embedding_config.get("pooling", "mean")
