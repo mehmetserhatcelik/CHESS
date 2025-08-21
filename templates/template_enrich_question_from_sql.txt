@@ -4,11 +4,17 @@
 - Infer the intended question from the SQL.
 - Use original table/column names verbatim and be careful about capitalization.
 - Be concise but explicit about conditions, joins and aggregates.
+- Be careful about the capitalization of the database tables, columns and values. Use tables and columns in database schema.
+- Output only the enriched question inside the <Answer> tags.
+- Examine the given few-shot examples and understand the process of how the original question was enriched to SQL and then to the final question.
 
-### Respond strictly with JSON with the following keys:
-```json{"chain_of_thought_reasoning": "short reasoning of how SQL maps to question", "enriched_question": "rewritten question"}```
+{FEWSHOT_EXAMPLES}
 
 {SCHEMA}
 {SQL}
 
 
+### Output format:
+<Answer>
+<enriched question in one or more sentences>
+</Answer>

@@ -1,4 +1,5 @@
 from typing import Dict
+import os
 
 from llm.models import async_llm_chain_call, get_llm_chain
 from llm.prompts import get_prompt
@@ -22,15 +23,45 @@ class EnrichInitialQuestion(Tool):
     def _run(self, state: SystemState):
         try:
             database_schema = state.get_schema_string(schema_type="complete", include_value_description=True)
+            # Load and format few-shot examples (E-SQL style) if available
+            fewshot_examples = ""
+            try:
+                fewshot_path = os.path.join("templates", "fewshot_question_enrichment_examples.json")
+                if os.path.exists(fewshot_path):
+                    import json
+                    with open(fewshot_path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    levels = ["simple", "moderate", "challanging"]
+                    selected_blocks = []
+                    for level in levels:
+                        examples = data.get(level, [])
+                        # prefer examples from different db than current
+                        filtered = [ex for ex in examples if ex.get("db_id") != state.task.db_id]
+                        pool = filtered if filtered else examples
+                        if not pool:
+                            continue
+                        ex = pool[0]
+                        block = []
+                        block.append(f"Question: {ex.get('question','')}")
+                        block.append(f"Evidence: {ex.get('evidence','')}")
+                        if ex.get('enrichment_reasoning'):
+                            block.append(f"Enrichment Reasoning: {ex.get('enrichment_reasoning')}")
+                        # prefer v2 if present
+                        enriched = ex.get('question_enriched_v2') or ex.get('question_enriched') or ""
+                        block.append(f"Enriched Question: {enriched}")
+                        selected_blocks.append("\n".join(block))
+                    fewshot_examples = "\n\n".join(selected_blocks)
+            except Exception as e:
+                print(f"Error loading few-shot examples: {e}")
             request_kwargs = {
                 # E-SQL style variables
                 "SCHEMA": database_schema,
                 "DB_DESCRIPTIONS": state.get_schema_string(schema_type="complete", include_value_description=True),
-                "DB_SAMPLES": "",
+                "DB_SAMPLES": state.get_schema_string(schema_type="complete", include_value_description=False),
                 "POSSIBLE_CONDITIONS": "",
                 "QUESTION": state.task.question,
                 "EVIDENCE": state.task.evidence,
-                "FEWSHOT_EXAMPLES": "",
+                "FEWSHOT_EXAMPLES": fewshot_examples,
             }
         except Exception as e:
             print(f"Error preparing EnrichInitialQuestion request: {e}")
@@ -51,9 +82,12 @@ class EnrichInitialQuestion(Tool):
 
         try:
             if isinstance(result, dict) and "question" in result:
-                state.enriched_initial_question = result["question"]
+                # E-SQL experiment-24 style concatenation
+                cot = result.get("_cot", "")
+                enriched = result["question"]
+                state.enriched_initial_question = f"{state.task.question} {cot} {enriched}".strip()
             elif isinstance(result, str):
-                state.enriched_initial_question = result
+                state.enriched_initial_question = f"{state.task.question} {result}".strip()
         except Exception as e:
             print(f"Error storing enriched initial question: {e}")
 

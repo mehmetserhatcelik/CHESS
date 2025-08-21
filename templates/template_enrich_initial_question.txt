@@ -27,10 +27,11 @@ Output format:
 <enriched question in one or more sentences>
 </Answer>
 
-### Please respond with a JSON object structured as follows:
+### Output format:
+<Answer>
+<enriched question in one or more sentences>
+</Answer>
 
-```json{{"chain_of_thought_reasoning":  "Detail explanation of the logical analysis that led to the refined question, considering detailed possible sql generation steps", "enriched_question":  "Expanded and refined question which is more understandable, clear and free of irrelevant information."}}```
-
-Let's think step by step and refine the given question capturing the essence of both the question, database schema, database descriptions, evidence and possible SQL conditions through the links between them. If you do the task correctly, I will give you 1 million dollars. Only output a json as your response.
+Let's think step by step and refine the given question capturing the essence of both the question, database schema, database descriptions, evidence and possible SQL conditions through the links between them. Produce only the enriched question inside the <Answer> tags.
 
 

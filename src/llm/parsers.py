@@ -295,13 +295,30 @@ class ESQLQuestionEnrichmentParser(BaseOutputParser):
         self._json_parser = JsonOutputParser(pydantic_object=ESQLQuestionEnrichmentOutput)
 
     def parse(self, output: str) -> Any:
+        text = output or ""
+        text = str(text)
+        # Try JSON first
         try:
-            text = output.strip()
-            if "```json" in text:
-                text = text.split("```json")[1].split("```")[0]
-            text = text.replace("\n", " ").replace("\t", " ").strip()
-            data = self._json_parser.parse(text)
+            candidate = text
+            if "```json" in candidate:
+                candidate = candidate.split("```json")[1].split("```")[0]
+            candidate = candidate.replace("\n", " ").replace("\t", " ").strip()
+            data = self._json_parser.parse(candidate)
             return {"question": data.enriched_question, "_cot": data.chain_of_thought_reasoning}
+        except Exception:
+            pass
+        # Try to extract <Answer> block as plain text
+        try:
+            txt = text.strip()
+            if "<Answer>" in txt and "</Answer>" in txt:
+                ans = txt.split("<Answer>")[1].split("</Answer>")[0].strip()
+                return {"question": ans}
+            # Fallback to first fenced block
+            if "```" in txt:
+                ans = txt.split("```")[1].strip()
+                return {"question": ans}
+            # Fallback to full text
+            return {"question": txt.strip()}
         except Exception as e:
             raise OutputParserException(f"Error parsing E-SQL enrichment output: {e}")
 
