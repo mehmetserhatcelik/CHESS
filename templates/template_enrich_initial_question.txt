@@ -24,16 +24,10 @@
 
 Output format:
 <Answer>
-<enriched question in one or more sentences>
+{SINGLE_ENRICHED_QUESTION_SENTENCE}
 </Answer>
 
-### Output requirements:
-- Write a SINGLE, concise natural-language question sentence.
-- Use exact table.column and value names where relevant; be precise and minimal.
-- No lists, no explanations, no reasoning, no extra text.
+### Now it is the time to think step by step. And then output the answer.
 
-<Answer>
-<single enriched question sentence>
-</Answer>
 
 

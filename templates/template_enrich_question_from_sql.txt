@@ -13,12 +13,8 @@
 {SCHEMA}
 {SQL}
 
-
-### Output requirements:
-- Write a SINGLE, concise natural-language question sentence.
-- Use exact table.column and value names where relevant; be precise and minimal.
-- No lists, no explanations, no reasoning, no extra text.
-
 <Answer>
-<single enriched question sentence>
+{SINGLE_ENRICHED_QUESTION_SENTENCE}
 </Answer>
+
+### Now it is the time to think step by step. And then output the answer.

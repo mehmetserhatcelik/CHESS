@@ -40,16 +40,7 @@ class SimilarityTest(Tool):
             print(f"Error in SimilarityTest: {e}")
             return
 
-        # Remove duplicates from candidates to match questions (same logic as generate_reverse_question)
-        if candidates:
-            seen_sqls = set()
-            unique_candidates = []
-            for sql_meta_info in candidates:
-                sql_text = sql_meta_info.SQL
-                if sql_text not in seen_sqls:
-                    unique_candidates.append(sql_meta_info)
-                    seen_sqls.add(sql_text)
-            candidates = unique_candidates
+        # Keep all candidates, including duplicates, to maintain 1:1 alignment with generated questions
 
         if not candidates or not questions or len(candidates) != len(questions):
             self._init_sql_bucket(state, candidates_key)
@@ -109,6 +100,7 @@ class SimilarityTest(Tool):
         return {
             "scores": self.scores,
             "winner_index": self.winner_index,
+            "questions": state.reverse_questions.get(list(state.reverse_questions.keys())[-1], []),
             "candidates": [sql_meta_info.SQL for sql_meta_info in target_SQL_meta_infos],
             "selected_candidate": state.SQL_meta_infos[self.SQL_id][0].SQL
         }
