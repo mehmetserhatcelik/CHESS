@@ -3,22 +3,12 @@ from typing import Any, Dict, List, Optional
 import math
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_vertexai import VertexAIEmbeddings
-import torch
-try:
-    from transformers import AutoModel, AutoTokenizer, AutoModelForTextEmbedding
-except ImportError:  # pragma: no cover - older transformers versions
-    from transformers import AutoModel, AutoTokenizer
-    AutoModelForTextEmbedding = None
 
 
 def get_embedding_client(
     model: str,
-    base_uri: str = None,
     api_key: str = None,
     provider: str = "vertexai",
-    device: Optional[str] = None,
-    pooling: str = "mean",
-    max_length: Optional[int] = None,
 ) -> Any:
     """
     Creates an embeddings client for different providers.
@@ -45,18 +35,7 @@ def get_embedding_client(
         # Default to Vertex AI text-embedding-004 if model is not provided
         model_name = model or "text-embedding-004"
         return VertexAIEmbeddings(model_name=model_name)
-    elif provider == "huggingface":
-        # Local/hosted HF model. Default device auto-detection.
-        resolved_device = device
-        if resolved_device is None or resolved_device == "auto":
-            resolved_device = "cuda" if torch.cuda.is_available() else "cpu"
 
-        return _HuggingFaceEmbeddingClient(
-            model_name=model,
-            device=resolved_device,
-            pooling=pooling,
-            max_length=max_length,
-        )
     else:
         raise ValueError(f"Unsupported embeddings provider: {provider}")
 
@@ -85,68 +64,4 @@ def compute_pairwise_similarities(anchor: List[float], candidates: List[List[flo
     return [compute_cosine_similarity(anchor, cand) for cand in candidates]
 
 
-
-class _HuggingFaceEmbeddingClient:
-    """
-    Minimal embedding client wrapper for HuggingFace models that exposes
-    an embed_documents(texts) method to match other providers.
-    """
-
-    def __init__(self, model_name: str, device: str = "cpu", pooling: str = "mean", max_length: Optional[int] = None) -> None:
-        self.model_name = model_name
-        self.device = device
-        self.pooling = pooling.lower() if pooling else "mean"
-        self.max_length = max_length or 8192
-        # Try fast tokenizer first; if it fails due to tokenizers JSON mismatch, fall back to slow
-        try:
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                model_name, use_fast=True, trust_remote_code=True
-            )
-        except Exception:
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                model_name, use_fast=False, trust_remote_code=True
-            )
-        # Use AutoModelForTextEmbedding when available (e.g., Qwen3-8B-Embedding)
-        if AutoModelForTextEmbedding is not None:
-            try:
-                self.model = AutoModelForTextEmbedding.from_pretrained(
-                    model_name, trust_remote_code=True
-                )
-            except Exception:
-                self.model = AutoModel.from_pretrained(
-                    model_name, trust_remote_code=True
-                )
-        else:
-            self.model = AutoModel.from_pretrained(
-                model_name, trust_remote_code=True
-            )
-        self.model.eval()
-        self.model.to(self.device)
-
-    def _pool(self, token_embeddings: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
-        if self.pooling == "cls":
-            return token_embeddings[:, 0]
-        # mean pooling
-        input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-        sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, dim=1)
-        sum_mask = input_mask_expanded.sum(dim=1).clamp(min=1e-9)
-        return sum_embeddings / sum_mask
-
-    @torch.inference_mode()
-    def embed_documents(self, texts: List[str]) -> List[List[float]]:
-        if not texts:
-            return []
-        encoded = self.tokenizer(
-            texts,
-            padding=True,
-            truncation=True,
-            max_length=self.max_length,
-            return_tensors="pt",
-        )
-        encoded = {k: v.to(self.device) for k, v in encoded.items()}
-        outputs = self.model(**encoded)
-        token_embeddings = outputs.last_hidden_state  # [batch, seq, hidden]
-        sentence_embeddings = self._pool(token_embeddings, encoded["attention_mask"])  # [batch, hidden]
-        sentence_embeddings = torch.nn.functional.normalize(sentence_embeddings, p=2, dim=1)
-        return sentence_embeddings.cpu().tolist()
 
