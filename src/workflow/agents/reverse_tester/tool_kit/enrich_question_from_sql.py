@@ -107,10 +107,15 @@ class EnrichQuestionFromSQL(Tool):
                 continue
 
     def _get_updates(self, state: SystemState) -> Dict:
-        key = list(state.reverse_questions.keys())[-1]
+        try:
+            key = list(state.reverse_questions.keys())[-1]
+            questions = state.reverse_questions.get(key, [])
+        except Exception:
+            key = None
+            questions = []
         return {
             "node_type": self.tool_name,
-            "questions": state.reverse_questions[key]
+            "questions": questions
         }
 
 

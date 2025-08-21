@@ -292,7 +292,6 @@ class ESQLQuestionEnrichmentParser(BaseOutputParser):
     """Parses E-SQL style JSON with keys chain_of_thought_reasoning and enriched_question from fenced block or raw text."""
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
-        self._json_parser = JsonOutputParser(pydantic_object=ESQLQuestionEnrichmentOutput)
 
     def parse(self, output: str) -> Any:
         text = output or ""
@@ -303,7 +302,7 @@ class ESQLQuestionEnrichmentParser(BaseOutputParser):
             if "```json" in candidate:
                 candidate = candidate.split("```json")[1].split("```")[0]
             candidate = candidate.replace("\n", " ").replace("\t", " ").strip()
-            data = self._json_parser.parse(candidate)
+            data = JsonOutputParser(pydantic_object=ESQLQuestionEnrichmentOutput).parse(candidate)
             return {"question": data.enriched_question, "_cot": data.chain_of_thought_reasoning}
         except Exception:
             pass
