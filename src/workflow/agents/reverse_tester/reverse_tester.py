@@ -3,6 +3,8 @@ from workflow.agents.agent import Agent
 from workflow.agents.reverse_tester.tool_kit.generate_reverse_question import GenerateReverseQuestion
 from workflow.agents.reverse_tester.tool_kit.similarity_test import SimilarityTest
 from workflow.agents.reverse_tester.tool_kit.generate_question_test import GenerateQuestionTest
+from workflow.agents.reverse_tester.tool_kit.enrich_initial_question import EnrichInitialQuestion
+from workflow.agents.reverse_tester.tool_kit.enrich_question_from_sql import EnrichQuestionFromSQL
 
 
 class ReverseTester(Agent):
@@ -22,7 +24,9 @@ class ReverseTester(Agent):
         )
 
         self.tools = {
+            "enrich_initial_question": EnrichInitialQuestion(**config["tools"].get("enrich_initial_question", {})),
             "generate_reverse_question": GenerateReverseQuestion(**config["tools"]["generate_reverse_question"]),
+            "enrich_question_from_sql": EnrichQuestionFromSQL(**config["tools"].get("enrich_question_from_sql", {})),
             "similarity_test": SimilarityTest(**config["tools"].get("similarity_test", {})),
             "generate_question_test": GenerateQuestionTest(**config["tools"].get("generate_question_test", {}))
         }
@@ -35,9 +39,15 @@ class ReverseTester(Agent):
         2) Run similarity_test to pick the most similar question to the user's initial question
         Returns the updated system state.
         """
-        # Step 1: generate reverse questions
-        generate_tool = self.tools["generate_reverse_question"]
-        generate_tool(system_state)
+        # Optionally enrich initial question
+        if self.config["tools"].get("enrich_initial_question"):
+            self.tools["enrich_initial_question"](system_state)
+
+        # Step 1: generate enriched questions directly from SQLs (preferred), else reverse-gen
+        if self.config["tools"].get("enrich_question_from_sql"):
+            self.tools["enrich_question_from_sql"](system_state)
+        else:
+            self.tools["generate_reverse_question"](system_state)
 
         # Step 2: pick the best matching question -> corresponding SQL
         if self.config["tools"].get("generate_question_test"):

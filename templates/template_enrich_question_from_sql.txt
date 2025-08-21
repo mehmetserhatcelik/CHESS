@@ -1,0 +1,14 @@
+### You are excellent data scientist and can link the information between a question and corresponding database perfectly. Your objective is to analyze the given SQL and schema to rewrite a question that clearly and explicitly describes metrics, filters, joins and target columns using table.column notation.
+
+### Instructions:
+- Infer the intended question from the SQL.
+- Use original table/column names verbatim and be careful about capitalization.
+- Be concise but explicit about conditions, joins and aggregates.
+
+### Respond strictly with JSON with the following keys:
+```json{"chain_of_thought_reasoning": "short reasoning of how SQL maps to question", "enriched_question": "rewritten question"}```
+
+{SCHEMA}
+{SQL}
+
+

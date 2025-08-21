@@ -71,7 +71,8 @@ class SimilarityTest(Tool):
                     provider=provider,
                 )
 
-                anchor_text = state.task.question
+                # Prefer enriched initial question if present
+                anchor_text = state.enriched_initial_question or state.task.question
                 candidate_texts = questions
                 vectors = embed_texts(client, [anchor_text] + candidate_texts)
                 anchor_vec, candidate_vecs = vectors[0], vectors[1:]

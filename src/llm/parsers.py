@@ -284,6 +284,27 @@ class PlainTextOrJSONQuestionParser(BaseOutputParser):
         except Exception as e:
             raise OutputParserException(f"Error parsing reverse question: {e}")
 
+class ESQLQuestionEnrichmentOutput(BaseModel):
+    chain_of_thought_reasoning: str = Field(description="Detail explanation of the logical analysis that led to the refined question, considering detailed possible sql generation steps")
+    enriched_question: str = Field(description="Expanded and refined question which is more understandable, clear and free of irrelevant information.")
+
+class ESQLQuestionEnrichmentParser(BaseOutputParser):
+    """Parses E-SQL style JSON with keys chain_of_thought_reasoning and enriched_question from fenced block or raw text."""
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+        self._json_parser = JsonOutputParser(pydantic_object=ESQLQuestionEnrichmentOutput)
+
+    def parse(self, output: str) -> Any:
+        try:
+            text = output.strip()
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0]
+            text = text.replace("\n", " ").replace("\t", " ").strip()
+            data = self._json_parser.parse(text)
+            return {"question": data.enriched_question, "_cot": data.chain_of_thought_reasoning}
+        except Exception as e:
+            raise OutputParserException(f"Error parsing E-SQL enrichment output: {e}")
+
 class SimilarityJudgeParser(BaseOutputParser):
     """Parses judge output containing winner_index and optional scores list."""
     def __init__(self, **kwargs: Any):
@@ -346,7 +367,8 @@ def get_parser(parser_name: str) -> BaseOutputParser:
         "evaluate": UnitTestEvaluationOutput(),
         "generate_unit_tests": TestCaseGenerationOutput(),
         "reverse_question": PlainTextOrJSONQuestionParser(),
-        "similarity_judge": SimilarityJudgeParser()
+        "similarity_judge": SimilarityJudgeParser(),
+        "esql_question_enrichment": ESQLQuestionEnrichmentParser()
     }
 
     if parser_name not in parser_configs:
