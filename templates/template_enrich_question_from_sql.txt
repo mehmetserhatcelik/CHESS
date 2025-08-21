@@ -14,7 +14,11 @@
 {SQL}
 
 
-### Output format:
+### Output requirements:
+- Write a SINGLE, concise natural-language question sentence.
+- Use exact table.column and value names where relevant; be precise and minimal.
+- No lists, no explanations, no reasoning, no extra text.
+
 <Answer>
-<enriched question in one or more sentences>
+<single enriched question sentence>
 </Answer>

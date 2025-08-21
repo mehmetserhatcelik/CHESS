@@ -82,12 +82,9 @@ class EnrichInitialQuestion(Tool):
 
         try:
             if isinstance(result, dict) and "question" in result:
-                # E-SQL experiment-24 style concatenation
-                cot = result.get("_cot", "")
-                enriched = result["question"]
-                state.enriched_initial_question = f"{state.task.question} {cot} {enriched}".strip()
+                state.enriched_initial_question = result["question"].strip()
             elif isinstance(result, str):
-                state.enriched_initial_question = f"{state.task.question} {result}".strip()
+                state.enriched_initial_question = result.strip()
         except Exception as e:
             print(f"Error storing enriched initial question: {e}")
 

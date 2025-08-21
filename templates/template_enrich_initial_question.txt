@@ -27,11 +27,13 @@ Output format:
 <enriched question in one or more sentences>
 </Answer>
 
-### Output format:
-<Answer>
-<enriched question in one or more sentences>
-</Answer>
+### Output requirements:
+- Write a SINGLE, concise natural-language question sentence.
+- Use exact table.column and value names where relevant; be precise and minimal.
+- No lists, no explanations, no reasoning, no extra text.
 
-Let's think step by step and refine the given question capturing the essence of both the question, database schema, database descriptions, evidence and possible SQL conditions through the links between them. Produce only the enriched question inside the <Answer> tags.
+<Answer>
+<single enriched question sentence>
+</Answer>
 
 

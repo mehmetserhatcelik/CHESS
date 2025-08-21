@@ -59,60 +59,35 @@ class SimilarityTest(Tool):
 
         self._init_sql_bucket(state, candidates_key)
 
-        used_embeddings = False
-        if self.mode in ("embeddings", "auto"):
+        # Always use embeddings (prefer Vertex AI), with Gemini fallback; no LLM judging fallback
+        sims: List[float] = []
+        try_order = []
+        if self.embedding_config:
+            try_order.append((self.embedding_config.get("provider"), self.embedding_config.get("model")))
+        try_order += [("vertexai", "text-embedding-004"), ("google_genai", "models/embedding-001")]
+
+        tried = set()
+        for provider, model in try_order:
+            if not provider or not model or (provider, model) in tried:
+                continue
+            tried.add((provider, model))
             try:
-                # Default to Vertex AI embeddings unless overridden in YAML
-                model_name = self.embedding_config.get("model", "text-embedding-004")
-                provider = self.embedding_config.get("provider", "vertexai")
-
-                client = get_embedding_client(
-                    model=model_name,
-                    provider=provider,
-                )
-
-                # Prefer enriched initial question if present
+                client = get_embedding_client(model=model, provider=provider)
                 anchor_text = state.enriched_initial_question or state.task.question
                 candidate_texts = questions
                 vectors = embed_texts(client, [anchor_text] + candidate_texts)
                 anchor_vec, candidate_vecs = vectors[0], vectors[1:]
                 sims = compute_pairwise_similarities(anchor_vec, candidate_vecs)
-                self.scores = sims
-                if len(sims) > 0:
-                    self.winner_index = max(range(len(sims)), key=lambda i: sims[i])
-                    used_embeddings = True
+                break
             except Exception as e:
-                print(f"Error in SimilarityTest embeddings flow: {e}")
-                used_embeddings = False
+                print(f"Embedding attempt failed for {(provider, model)}: {e}")
+                continue
 
-        if not used_embeddings:
-            request_kwargs = {
-                "INITIAL_QUESTION": state.task.question,
-                "GENERATED_QUESTIONS": "\n".join([f"Question #{i+1}: {q}" for i, q in enumerate(questions)]),
-            }
-
-            try:
-                response = async_llm_chain_call(
-                    prompt=get_prompt(template_name=self.template_name),
-                    engine=get_llm_chain(**self.engine_config),
-                    parser=get_parser(self.parser_name),
-                    request_list=[request_kwargs],
-                    step=self.tool_name,
-                )
-                result = response[0][0] if response and response[0] else None
-            except Exception as e:
-                print(f"Error in SimilarityTest calling LLM: {e}")
-                result = None
-
-            if isinstance(result, dict):
-                self.winner_index = int(result.get("winner_index", -1))
-                if "scores" in result and isinstance(result["scores"], list):
-                    try:
-                        self.scores = [float(x) for x in result["scores"]]
-                    except Exception:
-                        self.scores = []
-            else:
-                self.winner_index = -1
+        self.scores = sims or []
+        if len(self.scores) > 0:
+            self.winner_index = max(range(len(self.scores)), key=lambda i: self.scores[i])
+        else:
+            self.winner_index = 0
 
         if self.winner_index is None or self.winner_index < 0 or self.winner_index >= len(questions):
             self.winner_index = 0
