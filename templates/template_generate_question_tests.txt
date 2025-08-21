@@ -1,0 +1,33 @@
+** Instructions: **
+
+Given the original question and a list of reverse-generated candidate questions, design a set of {UNIT_TEST_CAP} question tests that can distinguish the candidates by intent and constraints.
+
+- The tests should target meaning, not phrasing. Focus on whether a candidate preserves the required entities, filters, time ranges, aggregations, and relationships implied by the original question and hint.
+- Each test should be discriminative and likely to separate at least two candidates.
+- Phrase tests like: "The question should mention...", "The question should require...", "The question should restrict to...", "The question should aggregate by...", etc.
+- First think step by step to craft a minimal set of strong discriminators in the <Thinking> tag.
+- Then output ONLY the list of tests as Python list of strings in the <Answer> tag.
+
+VERY IMPORTANT:
+- Do not reference the database or SQL; evaluate the natural-language questions only.
+- Do not grade formatting or wording; test the intent and constraints.
+
+Example of the output format:
+<Thinking> Your step by step reasoning here. </Thinking>
+<Answer>
+['The question should mention...', 'The question should require...', 'The question should restrict to...']
+</Answer>
+
+** Original Question: **
+Question: {INITIAL_QUESTION} (Hint: {HINT})
+
+** Candidate Questions: **
+{GENERATED_QUESTIONS}
+
+** Output Format: **
+<Thinking> Your step by step reasoning here. </Thinking>
+<Answer>
+output should be only a list of strings (e.g. ['test #1', 'test #2', 'test #3']).
+</Answer>
+
+

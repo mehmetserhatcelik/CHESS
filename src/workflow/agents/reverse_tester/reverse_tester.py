@@ -2,6 +2,7 @@ from workflow.agents.agent import Agent
 
 from workflow.agents.reverse_tester.tool_kit.generate_reverse_question import GenerateReverseQuestion
 from workflow.agents.reverse_tester.tool_kit.similarity_test import SimilarityTest
+from workflow.agents.reverse_tester.tool_kit.generate_question_test import GenerateQuestionTest
 
 
 class ReverseTester(Agent):
@@ -22,7 +23,8 @@ class ReverseTester(Agent):
 
         self.tools = {
             "generate_reverse_question": GenerateReverseQuestion(**config["tools"]["generate_reverse_question"]),
-            "similarity_test": SimilarityTest(**config["tools"]["similarity_test"])            
+            "similarity_test": SimilarityTest(**config["tools"].get("similarity_test", {})),
+            "generate_question_test": GenerateQuestionTest(**config["tools"].get("generate_question_test", {}))
         }
 
 
@@ -37,8 +39,10 @@ class ReverseTester(Agent):
         generate_tool = self.tools["generate_reverse_question"]
         generate_tool(system_state)
 
-        # Step 2: similarity judge picks the best matching question -> corresponding SQL
-        similarity_tool = self.tools["similarity_test"]
-        similarity_tool(system_state)
+        # Step 2: pick the best matching question -> corresponding SQL
+        if self.config["tools"].get("generate_question_test"):
+            self.tools["generate_question_test"](system_state)
+        else:
+            self.tools["similarity_test"](system_state)
 
         return system_state

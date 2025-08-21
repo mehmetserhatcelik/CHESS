@@ -1,0 +1,27 @@
+You are a careful evaluator. Your task is to identify which reverse-generated question best matches the original question by checking which candidate passes the most tests.
+
+Instructions:
+- Read the original question and hint carefully.
+- Evaluate each candidate question against the provided question tests.
+- Choose the best matching candidate.
+
+Report strictly in the following format inside <Answer> tags:
+- winner_index: <1-based-index-of-best-candidate>
+- scores: [s1, s2, ..., sk]  where si is the count of passed tests (or a normalized score) for candidate i.
+
+Example:
+<Answer>
+winner_index: 2; scores: [3, 7, 1]
+</Answer>
+
+Original Question: {INITIAL_QUESTION}
+Hint: {HINT}
+
+Candidate Questions:
+{GENERATED_QUESTIONS}
+
+Question Tests:
+{QUESTION_TESTS}
+
+Now think briefly and then produce the required <Answer> strictly.
+

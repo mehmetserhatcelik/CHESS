@@ -1,0 +1,62 @@
+setting_name: CHESS_IR_CG_RT_QT
+
+team_agents:
+  information_retriever:
+    engine: "gemini-2.0-flash-lite"
+    tools:
+      extract_keywords:
+        template_name: "extract_keywords"
+        engine_config:
+          engine_name: "gemini-2.0-flash-lite"
+          temperature: 0.2
+        parser_name: "python_list_output_parser"
+      retrieve_entity: {}
+      retrieve_context:
+        top_k: 5
+
+  candidate_generator:
+    engine: "gemini-2.0-flash-lite"
+    tools:
+      generate_candidate:
+        generator_configs:
+          - template_name: "generate_candidate_one"
+            engine_config:
+              engine_name: "gemini-2.0-flash-lite"
+              temperature: 0.5
+            parser_name: "generate_candidate_gemini_markdown_cot"
+            sampling_count: 10
+          - template_name: "generate_candidate_two"
+            engine_config:
+              engine_name: "gemini-2.0-flash-lite"
+              temperature: 0.5
+            parser_name: "generate_candidate_gemini_markdown_cot"
+            sampling_count: 10
+
+      revise:
+        template_name: "revise_one"
+        engine_config:
+          engine_name: "gemini-2.0-flash-lite"
+          temperature: 0.0
+        parser_name: "revise_new"
+
+  reverse_tester:
+    engine: "gemini-2.0-flash-lite"
+    tools:
+      generate_reverse_question:
+        template_name: "generate_reverse_question"
+        engine_config:
+          engine_name: "gemini-2.0-flash-lite"
+          temperature: 0.3
+        parser_name: "reverse_question"
+        sampling_count: 1
+
+      generate_question_test:
+        generator_template_name: "generate_question_tests"
+        judge_template_name: "judge_question_tests"
+        engine_config:
+          engine_name: "gemini-2.0-flash-lite"
+          temperature: 0.0
+        tests_parser_name: "generate_unit_tests"
+        judge_parser_name: "similarity_judge"
+        unit_test_count: 12
+        sampling_count: 1
