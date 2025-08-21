@@ -1,7 +1,5 @@
-#!/usr/bin/env sh
-set -e
+source .env
 
-[ -f .env ] && . .env
 data_mode='dev' # Options: 'dev', 'train'
 data_path='./data/dev/dev.json' # UPDATE THIS WITH THE PATH TO THE TARGET DATASET
 
