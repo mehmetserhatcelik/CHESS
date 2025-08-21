@@ -10,11 +10,18 @@
 
 {FEWSHOT_EXAMPLES}
 
+<Inputs>
+DATABASE SCHEMA:
 {SCHEMA}
-{SQL}
 
-<Answer>
-{SINGLE_ENRICHED_QUESTION_SENTENCE}
-</Answer>
+SQL:
+```sql
+{SQL}
+```
+</Inputs>
+
+<Output>
+Provide only the enriched question text.
+</Output>
 
 ### Now it is the time to think step by step. And then output the answer.

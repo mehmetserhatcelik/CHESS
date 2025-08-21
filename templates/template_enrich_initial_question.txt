@@ -15,17 +15,29 @@
 ### Task: Given the following question, database schema, database column descriptions, database samples and evidence, expand the original question in detail to incorporate the identified database components and SQL steps like examples given above. Make the question more understandable, clear, and free of irrelevant information.
 ### Ensure that question is expanded with original database items. Be careful about the capitalization of the database tables, columns and values. Use tables and columns in database schema.
 
+<Inputs>
+DATABASE SCHEMA:
 {SCHEMA}
-{DB_DESCRIPTIONS}
-{DB_SAMPLES}
-{POSSIBLE_CONDITIONS}
-{QUESTION}
-{EVIDENCE}
 
-Output format:
-<Answer>
-{SINGLE_ENRICHED_QUESTION_SENTENCE}
-</Answer>
+DATABASE COLUMN DESCRIPTIONS:
+{DB_DESCRIPTIONS}
+
+DATABASE SAMPLES:
+{DB_SAMPLES}
+
+POSSIBLE SQL CONDITIONS:
+{POSSIBLE_CONDITIONS}
+
+INITIAL QUESTION:
+{QUESTION}
+
+EVIDENCE:
+{EVIDENCE}
+</Inputs>
+
+<Output>
+Provide only the enriched question text.
+</Output>
 
 ### Now it is the time to think step by step. And then output the answer.
 
