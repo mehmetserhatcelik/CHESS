@@ -67,6 +67,6 @@ team_agents:
 
       similarity_test:
         embedding_config:
-          provider: "google_genai" # or "vertexai"
-          model: "models/embedding-001" # or "text-embedding-004"
+          provider: "vertexai" # or "vertexai"
+          model: "text-embedding-004" # or "text-embedding-004"
 
