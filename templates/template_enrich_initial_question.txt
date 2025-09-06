@@ -10,9 +10,9 @@
 # Step 7 - Identify Relevant Database Components: Pinpoint the tables, columns, and values in the database that are directly related to the question.
 # Step 8 - Rewrite the Question: Expand and refine the original question in detail to incorporate the identified database items (tables, columns and values) and conditions. Express the rewritten question as a single interrogative sentence that follows the style described below. Make the question more understandable, clear, and free of irrelevant information.
 
-### Style and Structure Requirements (match SQL-derived candidate style):
+### Style and Structure Requirements:
 - Write the enriched question as a single interrogative sentence starting with: "What are the ...".
-- Use the pattern: What are the {selected columns} from {table(s)} where {conditions}?
+- Use the pattern: What are the selected columns from tables where conditions?
 - Use backticks around exact table and column names from the schema.
 - When combining columns, explicitly state the concatenation, e.g., "the concatenated `ColA` and `ColB` (as `alias`)".
 - Do not use imperative forms like "List", "Provide", or "Return".
