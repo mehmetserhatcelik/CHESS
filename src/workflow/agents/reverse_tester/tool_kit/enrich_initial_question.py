@@ -58,7 +58,6 @@ class EnrichInitialQuestion(Tool):
                 "SCHEMA": database_schema,
                 "DB_DESCRIPTIONS": state.get_schema_string(schema_type="complete", include_value_description=True),
                 "DB_SAMPLES": state.get_schema_string(schema_type="complete", include_value_description=False),
-                "POSSIBLE_CONDITIONS": "",
                 "QUESTION": state.task.question,
                 "EVIDENCE": state.task.evidence,
                 "FEWSHOT_EXAMPLES": fewshot_examples,

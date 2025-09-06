@@ -3,10 +3,18 @@
 ### Instructions:
 - Infer the intended question from the SQL.
 - Use original table/column names verbatim and be careful about capitalization.
-- Be concise but explicit about conditions, joins and aggregates.
+- Be concise but explicit about conditions and aggregates.
 - Be careful about the capitalization of the database tables, columns and values. Use tables and columns in database schema.
 - Output only the enriched question inside the <Answer> tags.
 - Examine the given few-shot examples and understand the process of how the original question was enriched to SQL and then to the final question.
+
+### Style and Structure Requirements (match SQL-derived candidate style):
+- Write the enriched question as a single interrogative sentence starting with: "What are the ...".
+- Use the pattern: What are the {selected columns} from {table(s)} where {conditions}?
+- Use backticks around exact table and column names from the schema.
+- When combining columns, explicitly state the concatenation, e.g., "the concatenated `ColA` and `ColB` (as `alias`)".
+- Do not use imperative forms like "List", "Provide", or "Return".
+- Keep wording concise and focused on fields, tables, and conditions.
 
 {FEWSHOT_EXAMPLES}
 
