@@ -35,6 +35,12 @@ class SystemState(BaseModel):
     enriched_initial_question: str = ""
     errors: Dict[str, str] = {}
     
+    # Mock DB testing state
+    mock_db_path: str = ""
+    mock_expected_answer: Dict[str, Any] = {}
+    mock_satisfying_row_counts: Dict[str, int] = {}
+    mock_generated_tables: Dict[str, List[Dict[str, Any]]] = {}
+    
     def add_columns_to_tentative_schema(self, selected_columns: Dict[str, List[str]]) -> None:
         """
         Adds columns to the tentative schema based on selected columns.
