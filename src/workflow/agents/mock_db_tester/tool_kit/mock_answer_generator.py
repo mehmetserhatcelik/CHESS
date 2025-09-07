@@ -15,7 +15,7 @@ class MockAnswerGenerator(Tool):
     then persists it both as JSON in state.mock_expected_answer and as a physical table named `answer` in the mock DB.
     """
 
-    def __init__(self, template_name: str = "mock_answer_generate", engine_config: Dict[str, Any] = None, parser_name: str = "select_tables"):
+    def __init__(self, template_name: str = "mock_answer_generate", engine_config: Dict[str, Any] = None, parser_name: str = "python_list_output_parser"):
         super().__init__()
         self.template_name = template_name
         self.engine_config = engine_config or {"engine_name": "gemini-2.0-flash-lite", "temperature": 0.0}
@@ -37,7 +37,7 @@ class MockAnswerGenerator(Tool):
         response = async_llm_chain_call(
             prompt=get_prompt(template_name=self.template_name),
             engine=get_llm_chain(**self.engine_config),
-            parser=get_parser("select_tables"),
+            parser=get_parser(self.parser_name),
             request_list=[request_kwargs],
             step=self.tool_name,
         )[0]

@@ -18,7 +18,7 @@ class MockDatabaseGenerator(Tool):
     a few satisfying rows tracked in state.mock_satisfying_row_counts.
     """
 
-    def __init__(self, template_name: str = "mock_db_generate", engine_config: Dict[str, Any] = None, parser_name: str = "list_output_parser"):
+    def __init__(self, template_name: str = "mock_db_generate", engine_config: Dict[str, Any] = None, parser_name: str = "python_list_output_parser"):
         super().__init__()
         self.template_name = template_name
         self.engine_config = engine_config or {"engine_name": "gemini-2.0-flash-lite", "temperature": 0.0}

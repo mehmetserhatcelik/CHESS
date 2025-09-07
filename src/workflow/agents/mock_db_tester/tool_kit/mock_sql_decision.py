@@ -1,4 +1,5 @@
 from typing import Dict, Any, List, Tuple
+import sqlite3
 
 from runner.database_manager import DatabaseManager
 from workflow.system_state import SystemState
@@ -27,27 +28,27 @@ class MockSQLDecision(Tool):
 
         expected = state.mock_expected_answer or {}
         expected_attrs: List[str] = expected.get("attributes", [])
-        expected_values: List[Tuple] = [tuple(row) for row in expected.get("values", [])]
+        expected_values: List[Tuple] = [tuple(str(x) for x in row) for row in expected.get("values", [])]
         expected_set = set(expected_values)
 
         best_idx = None
-        for idx, meta in enumerate(candidates):
-            sql = meta.SQL
-            try:
-                result_rows = DatabaseManager().subprocess_sql_executor(sql)
-                # Normalize row tuples
-                result_set = set(tuple(str(x) for x in row[:len(expected_attrs)]) for row in result_rows)
-                # Compare against expected answer
-                if expected_attrs and result_set == set(tuple(str(x) for x in row) for row in expected_values):
-                    best_idx = idx
-                    break
-            except Exception:
-                continue
+        with sqlite3.connect(state.mock_db_path, timeout=30) as conn:
+            cur = conn.cursor()
+            for idx, meta in enumerate(candidates):
+                sql = meta.SQL
+                try:
+                    cur.execute(sql)
+                    rows = cur.fetchall()
+                    result_set = set(tuple(str(x) for x in row[:len(expected_attrs)]) for row in rows)
+                    if expected_attrs and result_set == expected_set:
+                        best_idx = idx
+                        break
+                except Exception:
+                    continue
 
         if best_idx is not None:
             state.SQL_meta_infos[self.tool_name] = [candidates[best_idx]]
         else:
-            # If no exact match, leave empty to signal no decision
             state.SQL_meta_infos[self.tool_name] = []
 
     def _get_updates(self, state: SystemState) -> Dict:

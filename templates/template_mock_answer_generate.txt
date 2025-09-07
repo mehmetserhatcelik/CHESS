@@ -1,10 +1,14 @@
 You are a tool that decides the expected answer table for a given question using a mock database.
 
 Input:
-- DATABASE_SCHEMA: subset schema relevant to the candidate queries
-- QUESTION: the user question
-- HINT: optional extra context
-- SATISFYING_ROW_COUNTS: how many satisfying rows were inserted
+- DATABASE_SCHEMA (relevant subset):
+{DATABASE_SCHEMA}
+- QUESTION:
+{QUESTION}
+- HINT:
+{HINT}
+- SATISFYING_ROW_COUNTS:
+{SATISFYING_ROW_COUNTS}
 
 Task:
 - Determine the answer table shape (column names) and rows that should appear if the question is answered on the mock DB.
@@ -17,8 +21,8 @@ Output strictly as a JSON object within a fenced json block with keys:
 
 Return only this block:
 ```json
-{
+{{
   "attributes": ["col1", "col2"],
   "values": [["v11", "v12"], ["v21", "v22"]]
-}
+}}
 ```
