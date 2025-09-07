@@ -40,8 +40,7 @@ class SystemState(BaseModel):
     mock_db_sqls: List[str] = []
     satisfying_rows: Dict[str, Any] = {}
     mock_answer: Dict[str, Any] = {}
-    
-    # Mock DB testing state
+
     mock_db_path: str = ""
     mock_expected_answer: Dict[str, Any] = {}
     mock_satisfying_row_counts: Dict[str, int] = {}
