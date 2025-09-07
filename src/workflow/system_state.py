@@ -40,6 +40,11 @@ class SystemState(BaseModel):
     mock_db_sqls: List[str] = []
     satisfying_rows: Dict[str, Any] = {}
     mock_answer: Dict[str, Any] = {}
+
+    mock_db_path: str = ""
+    mock_expected_answer: Dict[str, Any] = {}
+    mock_satisfying_row_counts: Dict[str, int] = {}
+    mock_generated_tables: Dict[str, List[Dict[str, Any]]] = {}
     
     def add_columns_to_tentative_schema(self, selected_columns: Dict[str, List[str]]) -> None:
         """
