@@ -1,0 +1,10 @@
+You are given a question and a description of rows in a mock database that satisfy it.
+Determine the expected answer table for the question and output it as JSON with:
+- "attributes": list of column names in the answer table.
+- "values": list of rows, each row is a list of values.
+
+Question:
+{QUESTION}
+
+Satisfying Rows:
+{SATISFYING_ROWS}

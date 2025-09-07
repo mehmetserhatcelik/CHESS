@@ -95,6 +95,17 @@ class ReviseOutput(BaseModel):
     chain_of_thought_reasoning: str = Field(description="Your thought process on how you arrived at the final SQL query.")
     revised_SQL: str = Field(description="The revised SQL query in a single string.")
 
+
+class MockDatabaseGeneratorOutput(BaseModel):
+    """Output model for mock database generation."""
+    sql_statements: List[str] = Field(description="SQL statements to create tables and insert rows.")
+    satisfying_rows: Dict[str, Any] = Field(description="Description of the rows that satisfy the question conditions.")
+
+
+class MockAnswerOutput(BaseModel):
+    """Output model for mock answer generation."""
+    attributes: List[str] = Field(description="Column names of the answer table.")
+    values: List[List[Any]] = Field(description="Rows of the answer table.")
     
 class GenerateCandidateGeminiMarkDownParserCOT(BaseOutputParser):
     """Parses output embedded in markdown code blocks containing SQL queries."""
@@ -384,7 +395,9 @@ def get_parser(parser_name: str) -> BaseOutputParser:
         "generate_unit_tests": TestCaseGenerationOutput(),
         "reverse_question": PlainTextOrJSONQuestionParser(),
         "similarity_judge": SimilarityJudgeParser(),
-        "esql_question_enrichment": ESQLQuestionEnrichmentParser()
+        "esql_question_enrichment": ESQLQuestionEnrichmentParser(),
+        "mock_database_generator": lambda: JsonOutputParser(pydantic_object=MockDatabaseGeneratorOutput),
+        "mock_answer_generator": lambda: JsonOutputParser(pydantic_object=MockAnswerOutput),
     }
 
     if parser_name not in parser_configs:
