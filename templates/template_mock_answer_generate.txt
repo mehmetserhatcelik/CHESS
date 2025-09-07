@@ -1,0 +1,28 @@
+You are a tool that decides the expected answer table for a given question using a mock database.
+
+Input:
+- DATABASE_SCHEMA (relevant subset):
+{DATABASE_SCHEMA}
+- QUESTION:
+{QUESTION}
+- HINT:
+{HINT}
+- SATISFYING_ROW_COUNTS:
+{SATISFYING_ROW_COUNTS}
+
+Task:
+- Determine the answer table shape (column names) and rows that should appear if the question is answered on the mock DB.
+- Prefer compact scalar answers when aggregation is implied (e.g., COUNT -> single row, single column named `count`).
+- Otherwise, list rows that should be returned according to the satisfying rows definition.
+
+Output strictly as a JSON object within a fenced json block with keys:
+- attributes: list of column names in order
+- values: list of rows, each row is a list of values aligned with attributes
+
+Return only this block:
+```json
+{{
+  "attributes": ["col1", "col2"],
+  "values": [["v11", "v12"], ["v21", "v22"]]
+}}
+```

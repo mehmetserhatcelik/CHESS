@@ -1,0 +1,37 @@
+You are a tool that builds a tiny mock SQLite database given a database schema and a question.
+
+Input:
+- DATABASE_SCHEMA:
+{DATABASE_SCHEMA}
+- QUESTION:
+{QUESTION}
+- HINT:
+{HINT}
+
+Goal:
+- Create up to {MAX_ROWS} total rows across necessary tables.
+- Insert a small number of satisfying rows (rows that will be selected/aggregated to produce the correct answer for the question) and more non-satisfying rows.
+- Ensure join keys are consistent across tables.
+- Respect value types (INTEGER, REAL, TEXT, etc.).
+
+Output (return a single Python dict in a fenced python block) with keys:
+- ddl: list of CREATE TABLE statements covering only required tables/columns
+- inserts: list of INSERT statements to populate data (<= {MAX_ROWS} rows total)
+- satisfying_row_counts: dict mapping description/criterion to int (how many satisfying rows added)
+- generated_tables: optional dict mapping table->list of row dicts you generated (for traceability)
+
+Constraints:
+- Use backticked identifiers for table/column names when needed.
+- If a column is a join key (e.g., foreign key), reuse the same values across rows to enable joins.
+- Keep realistic yet simple values. TEXT for strings, numeric types for numbers.
+- Favor minimal schema subset necessary to answer the question.
+
+Return only the following python fenced block (note the double braces to avoid templating):
+```python
+{{
+  "ddl": ["CREATE TABLE ...", "..."],
+  "inserts": ["INSERT INTO ...", "..."],
+  "satisfying_row_counts": {{"satisfying": 3}},
+  "generated_tables": {{"table_name": [{{"col": "val"}}]}}
+}}
+```
