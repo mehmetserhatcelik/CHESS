@@ -9,6 +9,7 @@ from workflow.agents.schema_selector.schema_selector import SchemaSelector
 from workflow.agents.candidate_generator.candidate_generator import CandidateGenerator
 from workflow.agents.unit_tester.unit_tester import UnitTester
 from workflow.agents.reverse_tester.reverse_tester import ReverseTester
+from workflow.agents.mock_database_tester.mock_database_tester import MockDatabaseTester
 from workflow.agents.mock_db_tester.mock_db_tester import MockDBTester
 
 from workflow.agents.evaluation import ExecutionAccuracy
@@ -19,6 +20,7 @@ AGENT_CLASSES = {
     "candidate_generator": CandidateGenerator,
     "unit_tester": UnitTester,
     "reverse_tester": ReverseTester,
+    "mock_database_tester": MockDatabaseTester,
     "mock_db_tester": MockDBTester,
 }
 

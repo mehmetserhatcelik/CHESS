@@ -34,6 +34,12 @@ class SystemState(BaseModel):
     reverse_questions: Dict[str, List[str]] = {}
     enriched_initial_question: str = ""
     errors: Dict[str, str] = {}
+
+    # Fields used by the mock database agent
+    mock_db_path: str = ""
+    mock_db_sqls: List[str] = []
+    satisfying_rows: Dict[str, Any] = {}
+    mock_answer: Dict[str, Any] = {}
     
     # Mock DB testing state
     mock_db_path: str = ""
