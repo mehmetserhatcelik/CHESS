@@ -34,16 +34,24 @@ class MockAnswerGenerator(Tool):
             request_kwargs=request_kwargs,
             step=f"{self.tool_name}",
         )
-        self.answer = response
+        self.answer = response or {}
+
+        attributes: List[str] = list(self.answer.get("attributes", []) or [])
+        values: List[List[Any]] = list(self.answer.get("values", []) or [])
+
+        if not attributes:
+            # Nothing to materialize; still store the answer in state
+            state.mock_answer = {"attributes": [], "values": []}
+            return
 
         conn = sqlite3.connect(state.mock_db_path)
         cursor = conn.cursor()
-        cursor.execute("DROP TABLE IF EXISTS answer")
-        cols = ", ".join([f"{c} TEXT" for c in self.answer.get("attributes", [])])
-        cursor.execute(f"CREATE TABLE answer ({cols})")
-        for row in self.answer.get("values", []):
+        cursor.execute("DROP TABLE IF EXISTS `answer`")
+        cols = ", ".join([f"`{c}` TEXT" for c in attributes])
+        cursor.execute(f"CREATE TABLE `answer` ({cols})")
+        for row in values:
             placeholders = ",".join(["?" for _ in row])
-            cursor.execute(f"INSERT INTO answer VALUES ({placeholders})", row)
+            cursor.execute(f"INSERT INTO `answer` VALUES ({placeholders})", row)
         conn.commit()
         conn.close()
         state.mock_answer = self.answer

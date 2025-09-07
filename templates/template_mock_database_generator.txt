@@ -1,9 +1,16 @@
 You are given a database schema and a natural language question.
-Create SQL statements that build a small mock database able to answer the question.
-Include CREATE TABLE and INSERT statements. Insert a few rows that satisfy the question
-conditions and additional rows (up to a total of 30 per table) that do not.
+Create SQL statements that build a small mock SQLite database able to answer the question.
+
+Requirements:
+- Always output explicit column lists in INSERT statements (INSERT INTO `table`(`col1`,`col2`,...) VALUES (...)).
+- Always put CREATE TABLE statements before INSERT statements.
+- Only include tables/columns necessary to answer the question.
+- Ensure join keys share identical values across tables.
+- Use backticked identifiers for table and column names when they contain spaces or mixed case.
+- Limit total inserted rows to at most 30 per table; include a few satisfying rows and some distractors.
+
 Return the result as JSON with keys:
-- "sql_statements": list of SQL statements to execute sequentially.
+- "sql_statements": list of SQL statements to execute sequentially (CREATES first, then INSERTS).
 - "satisfying_rows": description of the rows that satisfy the question.
 
 Database Schema:

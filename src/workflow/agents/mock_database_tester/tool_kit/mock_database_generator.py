@@ -47,8 +47,55 @@ class MockDatabaseGenerator(Tool):
         conn = sqlite3.connect(db_path)
         try:
             cursor = conn.cursor()
+            # Execute DDL first, then DML
+            ddl_statements: List[str] = []
+            dml_statements: List[str] = []
             for stmt in self.generated_sql:
-                cursor.execute(stmt)
+                if not isinstance(stmt, str):
+                    continue
+                sql = stmt.strip().rstrip(";")
+                if not sql:
+                    continue
+                upper = sql.upper()
+                if upper.startswith("CREATE TABLE") or upper.startswith("DROP TABLE"):
+                    ddl_statements.append(sql)
+                elif upper.startswith("INSERT INTO"):
+                    dml_statements.append(sql)
+                else:
+                    # Ignore other statements for safety in mock DB setup
+                    continue
+
+            # Run DDL
+            for ddl in ddl_statements:
+                cursor.execute(ddl)
+
+            # Helper to ensure table exists before INSERT
+            def ensure_table_exists_for_insert(insert_sql: str) -> None:
+                try:
+                    # Extract table name and values count to build a simple TEXT schema if missing
+                    after_into = insert_sql.split("INTO", 1)[1].strip()
+                    table_and_rest = after_into.split(None, 1)
+                    table_ident = table_and_rest[0].strip()
+                    # Remove optional backticks/quotes
+                    table_clean = table_ident.strip("`\"")
+                    # Check if table exists
+                    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table_clean,))
+                    if cursor.fetchone():
+                        return
+                    # Infer column count from VALUES (...)
+                    values_part = insert_sql.upper().split("VALUES", 1)[1]
+                    first_tuple = values_part.split("(", 1)[1].split(")", 1)[0]
+                    num_cols = len([c for c in first_tuple.split(",")])
+                    cols = ", ".join([f"col{i+1} TEXT" for i in range(max(1, num_cols))])
+                    cursor.execute(f"CREATE TABLE IF NOT EXISTS `{table_clean}` ({cols})")
+                except Exception:
+                    # Best-effort; if parsing fails, let the INSERT raise naturally
+                    pass
+
+            # Run DML with best-effort auto-create
+            for dml in dml_statements:
+                ensure_table_exists_for_insert(dml)
+                cursor.execute(dml)
             conn.commit()
         finally:
             conn.close()
