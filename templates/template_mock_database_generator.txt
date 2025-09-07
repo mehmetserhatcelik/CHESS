@@ -1,0 +1,13 @@
+You are given a database schema and a natural language question.
+Create SQL statements that build a small mock database able to answer the question.
+Include CREATE TABLE and INSERT statements. Insert a few rows that satisfy the question
+conditions and additional rows (up to a total of 30 per table) that do not.
+Return the result as JSON with keys:
+- "sql_statements": list of SQL statements to execute sequentially.
+- "satisfying_rows": description of the rows that satisfy the question.
+
+Database Schema:
+{DATABASE_SCHEMA}
+
+Question:
+{QUESTION}
