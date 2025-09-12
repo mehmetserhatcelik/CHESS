@@ -24,13 +24,13 @@ team_agents:
               engine_name: "gemini-2.0-flash-lite"
               temperature: 0.5
             parser_name: "generate_candidate_gemini_markdown_cot"
-            sampling_count: 16
+            sampling_count: 4
           - template_name: "generate_candidate_two"
             engine_config:
               engine_name: "gemini-2.0-flash-lite"
               temperature: 0.5
             parser_name: "generate_candidate_gemini_markdown_cot"
-            sampling_count: 16
+            sampling_count: 4
 
       revise:
         template_name: "revise_one"
